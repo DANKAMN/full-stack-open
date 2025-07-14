@@ -1,23 +1,12 @@
-import React from 'react'
+import CourseItem from './CourseItem'
 
-const Course = ({ course }) => {
-  let totalExcercises = course.parts.reduce((sum, part) => sum + part.exercises, 0);
-
-  return (
-    <>
-        <h1>{course.name}</h1>
-        <div>
-            {
-                course["parts"].map((part) => (
-                    <p key={part.id}>
-                        {part.name}
-                    </p>
-                ))
-            }
-        </div>
-        <h4>Total of {totalExcercises} exercises</h4>
-    </>
-  )
-}
+const Course = ({ courses }) => (
+  <div>
+    <h1>Web development curriculum</h1>
+    {courses.map(course => (
+      <CourseItem key={course.id} course={course} />
+    ))}
+  </div>
+)
 
 export default Course
