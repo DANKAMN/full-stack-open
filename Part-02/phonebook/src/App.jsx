@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -6,8 +9,8 @@ const App = () => {
     { name: 'Ada Lovelace', number: '39-44-5323523' },
     { name: 'Dan Abramov', number: '12-43-234345' },
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
-
+  ])
+  
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
@@ -22,7 +25,7 @@ const App = () => {
     }
 
     const newPerson = { name: newName, number: newNumber }
-    setPersons(persons.concat(newPerson))
+    setPersons(prev => [...prev, newPerson])
     setNewName('')
     setNewNumber('')
   }
@@ -31,7 +34,6 @@ const App = () => {
   const handleNumberChange = (e) => setNewNumber(e.target.value)
   const handleFilterChange = (e) => setFilter(e.target.value)
 
-  
   const personsToShow = filter
     ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
     : persons
@@ -40,26 +42,19 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <div>
-        filter shown with: <input value={filter} onChange={handleFilterChange} />
-      </div>
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} /> <br />
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>Add a new</h3>
+      <PersonForm
+        handleSubmit={handleSubmit}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
 
-      <h2>Numbers</h2>
-      <ul>
-        {personsToShow.map((person, i) => (
-          <li key={i}>{person.name}: {person.number}</li>
-        ))}
-      </ul>
+      <h3>Numbers</h3>
+      <Persons persons={personsToShow} />
     </div>
   )
 }
