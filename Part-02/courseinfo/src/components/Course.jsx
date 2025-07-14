@@ -1,6 +1,8 @@
 import React from 'react'
 
 const Course = ({ course }) => {
+  let totalExcercises = course.parts.reduce((sum, part) => sum + part.exercises, 0);
+
   return (
     <>
         <h1>{course.name}</h1>
@@ -13,6 +15,7 @@ const Course = ({ course }) => {
                 ))
             }
         </div>
+        <h4>Total of {totalExcercises} exercises</h4>
     </>
   )
 }
