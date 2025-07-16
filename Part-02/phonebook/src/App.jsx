@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -11,12 +11,12 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error(error))
   }, [])
 
   const handleSubmit = (e) => {
@@ -29,22 +29,35 @@ const App = () => {
     }
 
     const newPerson = { name: newName, number: newNumber }
-    axios
-      .post("http://localhost:3001/persons", newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data))
-
+    personService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
-      .catch(error => console.error(error));
-    
+      .catch(error => console.error(error))
   }
 
   const handleNameChange = (e) => setNewName(e.target.value)
   const handleNumberChange = (e) => setNewNumber(e.target.value)
   const handleFilterChange = (e) => setFilter(e.target.value)
 
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}`)) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          console.error('Error deleting:', error)
+          alert(`The person '${name}' was already removed from server`)
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+  
   const personsToShow = filter
     ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
     : persons
@@ -65,7 +78,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handleDelete={handleDelete} />
     </div>
   )
 }
