@@ -6,6 +6,7 @@ import CountryInfo from './components/CountryInfo'
 const App = () => {
   const [search, setSearch] = useState('')
   const [countries, setCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
     if (search === '') {
@@ -35,15 +36,16 @@ const App = () => {
         Find countries: <input value={search} onChange={handleSearchChange} />
       </div>
 
-      {countries.length > 10 && <p>Too many matches, specify another filter.</p>}
-
-      {countries.length <= 10 && countries.length > 1 && (
-        <CountryList countries={countries} />
-      )}
-
-      {countries.length === 1 && (
-        <CountryInfo country={countries[0]} />
-      )}
+      {selectedCountry
+        ? <CountryInfo country={selectedCountry} />
+        : countries.length > 10
+          ? <p>Too many matches, specify another filter.</p>
+          : countries.length > 1
+            ? <CountryList countries={countries} handleShowClick={setSelectedCountry} />
+            : countries.length === 1
+              ? <CountryInfo country={countries[0]} />
+              : null
+      }
     </div>
   )
 }
