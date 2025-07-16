@@ -22,13 +22,35 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const nameExists = persons.some(person => person.name === newName)
-    if (nameExists) {
-      alert(`${newName} is already added to phonebook`)
+    const existingPerson = persons.find(person => person.name === newName)
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook. Would you like to replace the number with a new one?`
+      )
+
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber }
+
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            alert(`Failed to update ${newName}. They may have been removed from the server.`)
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+            console.error('Error updating person:', error)
+          })
+      }
+
       return
     }
 
     const newPerson = { name: newName, number: newNumber }
+
     personService
       .create(newPerson)
       .then(returnedPerson => {
@@ -37,7 +59,8 @@ const App = () => {
         setNewNumber('')
       })
       .catch(error => console.error(error))
-  }
+ }
+
 
   const handleNameChange = (e) => setNewName(e.target.value)
   const handleNumberChange = (e) => setNewNumber(e.target.value)
@@ -57,7 +80,7 @@ const App = () => {
         })
     }
   }
-  
+
   const personsToShow = filter
     ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
     : persons
