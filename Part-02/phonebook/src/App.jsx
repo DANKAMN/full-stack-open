@@ -18,6 +18,7 @@ const App = () => {
       .then(initialPersons => {
         setPersons(initialPersons)
       })
+      
       .catch(error => console.error(error))
   }, [])
 
