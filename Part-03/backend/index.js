@@ -1,11 +1,14 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const path = require('path')
 const app = express()
 
 app.use(cors())
 
 app.use(express.json())
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')))
 
 morgan.token('body', (req) => req.method === 'POST' ? JSON.stringify(req.body) : '')
 
@@ -99,6 +102,22 @@ app.post('/api/persons', (request, response) => {
 
     response.json(person)
 })
+
+app.put('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  const body = request.body
+
+  const index = persons.findIndex(person => person.id === id)
+
+  if (index !== -1) {
+    const updatedPerson = { ...persons[index], ...body }
+    persons[index] = updatedPerson
+    response.json(updatedPerson)
+  } else {
+    response.status(404).json({ error: 'Person not found' })
+  }
+})
+
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
