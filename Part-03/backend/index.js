@@ -23,7 +23,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
+  response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/info', (request, response) => {
@@ -40,29 +40,22 @@ app.get('/info', (request, response) => {
 
 
 app.get('/api/persons', (request, response) => {
-    Person.find({})
-      .then(persons => response.json(persons))
+  Person.find({})
+    .then(persons => response.json(persons))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findById(request.params.id)
-      .then(person => {
-        if (person) {
-          response.json(person)
-        } else {
-          response.status(404).end()
-        }
-      })
-      .catch(error => next(error))
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
-const generateId = () => {
-    const maxId = persons.length > 0 ? 
-        Math.max(...persons.map(p => Number(p.id))) 
-        : 0
-        
-    return String(maxId + 1)
-}
 
 app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
@@ -118,5 +111,5 @@ app.use((error, req, res, next) => {
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
